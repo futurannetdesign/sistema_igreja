@@ -1,0 +1,37 @@
+@media (max-width: 768px) {
+  .sidebar {
+    width: 60px;
+  }
+  .content {
+    margin-left: 60px;
+  }
+  .menu li a {
+    text-align: center;
+    padding: 15px;
+  }
+  .sidebar:hover {
+    width: 250px;
+  }
+  .sidebar:hover .menu li a {
+    text-align: left;
+    padding: 15px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 10px;
+    max-width: 90%;
+  }
+  input,
+  button {
+    font-size: 14px;
+  }
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+  .members-list table,
+  .baptisms-container table {
+    font-size: 14px;
+  }
+}
