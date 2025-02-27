@@ -26,3 +26,30 @@ export interface Evento {
   local: string;
   created_at: string;
 }
+
+export type Database = {
+  public: {
+    Tables: {
+      membros: {
+        Row: {
+          id: number;
+          nome: string;
+          email: string;
+          created_at: string;
+          // ... outros campos
+        };
+        Insert: {
+          nome: string;
+          email: string;
+          // ... campos necessários para inserção
+        };
+        Update: {
+          nome?: string;
+          email?: string;
+          // ... campos que podem ser atualizados
+        };
+      };
+      // ... outras tabelas
+    };
+  };
+};
