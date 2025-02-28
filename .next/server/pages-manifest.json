@@ -4,5 +4,6 @@
   "/_document": "pages/_document.js",
   "/admin/membros": "pages/admin/membros.js",
   "/admin/usuarios": "pages/admin/usuarios.js",
-  "/admin/dizimos": "pages/admin/dizimos.js"
+  "/admin/dizimos": "pages/admin/dizimos.js",
+  "/api/health": "pages/api/health.js"
 }
