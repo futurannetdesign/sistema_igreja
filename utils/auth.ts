@@ -9,13 +9,14 @@ export const checkUserRole = async () => {
     } = await supabase.auth.getUser();
     if (!user) return null;
 
-    const { data: role } = await supabase
+    // Atualizado para usar user_id em vez de id
+    const { data: roleData } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("user_id", user.id)
+      .eq("user_id", user.id) // Aqui está a mudança principal
       .single();
 
-    return role?.role || null;
+    return roleData?.role || null;
   } catch (error) {
     console.error("Erro ao verificar papel do usuário:", error);
     return null;

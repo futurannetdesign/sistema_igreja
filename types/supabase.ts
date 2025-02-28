@@ -49,6 +49,19 @@ export type Database = {
           // ... campos que podem ser atualizados
         };
       };
+      user_roles: {
+        Row: {
+          id: string; // UUID do usuário
+          role: "admin" | "pastor" | "secretary";
+        };
+        Insert: {
+          id: string;
+          role: "admin" | "pastor" | "secretary";
+        };
+        Update: {
+          role?: "admin" | "pastor" | "secretary";
+        };
+      };
       // ... outras tabelas
     };
   };

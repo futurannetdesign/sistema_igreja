@@ -2,36 +2,37 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { checkUserRole } from "../utils/auth";
 
-interface ProtectedLayoutProps {
-  children: React.ReactNode;
+interface ProtectedProps {
   allowedRoles: string[];
 }
 
-export default function ProtectedLayout({
-  children,
-  allowedRoles,
-}: ProtectedLayoutProps) {
-  const router = useRouter();
-  const [isAuthorized, setIsAuthorized] = useState(false);
+export const ProtectedLayout = <P extends object>(
+  Component: React.ComponentType<P>,
+  options: ProtectedProps
+) => {
+  return function ProtectedComponent(props: P) {
+    const router = useRouter();
+    const [isAuthorized, setIsAuthorized] = useState(false);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const userRole = await checkUserRole();
+    useEffect(() => {
+      const checkAuth = async () => {
+        const userRole = await checkUserRole();
 
-      if (!userRole || !allowedRoles.includes(userRole)) {
-        router.push("/login");
-        return;
-      }
+        if (!userRole || !options.allowedRoles.includes(userRole)) {
+          router.push("/login");
+          return;
+        }
 
-      setIsAuthorized(true);
-    };
+        setIsAuthorized(true);
+      };
 
-    checkAuth();
-  }, [router, allowedRoles]);
+      checkAuth();
+    }, [router]);
 
-  if (!isAuthorized) {
-    return <div>Carregando...</div>;
-  }
+    if (!isAuthorized) {
+      return <div>Carregando...</div>;
+    }
 
-  return <>{children}</>;
-}
+    return <Component {...props} />;
+  };
+};
