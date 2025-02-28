@@ -2,8 +2,8 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/admin": "pages/admin.js",
   "/login": "pages/login.js",
-  "/pastor": "pages/pastor.js",
+  "/admin": "pages/admin.js",
+  "/api/health": "pages/api/health.js",
   "/secretary": "pages/secretary.js"
 }
