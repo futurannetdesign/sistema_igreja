@@ -75,7 +75,7 @@ export default function AdminLayout({
               </a>
             )}
             <a
-              href="#"
+              href="/admin/eventos"
               className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
             >
               Eventos
