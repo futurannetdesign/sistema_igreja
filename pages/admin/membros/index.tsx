@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { ProtectedLayout } from "../../../components/ProtectedLayout";
 import { supabase } from "../../../lib/supabase";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FaWhatsapp, FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 
@@ -40,33 +40,45 @@ function MembrosPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Formatar as datas corretamente
+      // Verificar duplicata antes de salvar
+      const { data: existingMembro } = await supabase
+        .from("membros")
+        .select("id")
+        .eq("nome", currentMembro.nome)
+        .eq("data_nascimento", currentMembro.data_nascimento)
+        .maybeSingle();
+
+      if (
+        existingMembro &&
+        (!isEditing || existingMembro.id !== currentMembro.id)
+      ) {
+        throw new Error(
+          "Já existe um membro cadastrado com este nome e data de nascimento"
+        );
+      }
+
       const membroData = {
         ...currentMembro,
-        data_nascimento: currentMembro.data_nascimento,
-        data_batismo: currentMembro.data_batismo || null,
+        data_nascimento: currentMembro.data_nascimento
+          ? new Date(currentMembro.data_nascimento).toISOString().split("T")[0]
+          : null,
+        data_batismo: currentMembro.data_batismo
+          ? new Date(currentMembro.data_batismo).toISOString().split("T")[0]
+          : null,
         updated_at: new Date().toISOString(),
       };
 
       if (isEditing) {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from("membros")
           .update(membroData)
           .eq("id", currentMembro.id);
 
-        if (error) {
-          console.error("Erro ao atualizar:", error);
-          throw new Error(`Erro ao atualizar: ${error.message}`);
-        }
+        if (error) throw error;
       } else {
-        const { data, error } = await supabase
-          .from("membros")
-          .insert([membroData]);
+        const { error } = await supabase.from("membros").insert([membroData]);
 
-        if (error) {
-          console.error("Erro ao inserir:", error);
-          throw new Error(`Erro ao inserir: ${error.message}`);
-        }
+        if (error) throw error;
       }
 
       setShowModal(false);
@@ -74,7 +86,7 @@ function MembrosPage() {
     } catch (error: any) {
       console.error("Erro detalhado:", error);
       alert(
-        error.message || "Erro ao salvar membro. Por favor, tente novamente."
+        error.message || "Erro ao salvar membro. Verifique se não há duplicata."
       );
     }
   };
@@ -85,6 +97,13 @@ function MembrosPage() {
 
       if (!error) fetchMembros();
     }
+  };
+
+  // Atualizar a exibição das datas na tabela
+  const formatarData = (data: string) => {
+    if (!data) return "";
+    // Usar parseISO para garantir que a data seja interpretada corretamente
+    return format(parseISO(data), "dd/MM/yyyy", { locale: ptBR });
   };
 
   return (
@@ -144,15 +163,11 @@ function MembrosPage() {
                   </a>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {format(new Date(membro.data_nascimento), "dd/MM/yyyy", {
-                    locale: ptBR,
-                  })}
+                  {formatarData(membro.data_nascimento)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {membro.data_batismo
-                    ? format(new Date(membro.data_batismo), "dd/MM/yyyy", {
-                        locale: ptBR,
-                      })
+                    ? formatarData(membro.data_batismo)
                     : "Não batizado"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

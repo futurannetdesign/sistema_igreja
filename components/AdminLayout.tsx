@@ -21,7 +21,7 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Navbar */}
+      {/* Navbar com sombra mais pronunciada */}
       <nav className="bg-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between h-16">
@@ -31,7 +31,7 @@ export default function AdminLayout({
             <div className="flex items-center space-x-4">
               <button
                 onClick={handleLogout}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 shadow-md transform hover:scale-105 transition-all"
               >
                 Sair
               </button>
@@ -40,32 +40,44 @@ export default function AdminLayout({
         </div>
       </nav>
 
-      {/* Sidebar */}
+      {/* Sidebar com botões mais interativos */}
       <div className="flex">
         <aside className="w-64 bg-white shadow-lg h-screen">
-          <nav className="mt-5">
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">
+          <nav className="mt-5 space-y-1 px-2">
+            <a
+              href="#"
+              className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
+            >
               Dashboard
             </a>
             {role === "admin" && (
               <>
                 <a
                   href="/admin/membros"
-                  className="block px-4 py-2 hover:bg-gray-100"
+                  className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
                 >
                   Membros
                 </a>
-                <a href="#" className="block px-4 py-2 hover:bg-gray-100">
+                <a
+                  href="/admin/usuarios"
+                  className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
+                >
                   Usuários
                 </a>
               </>
             )}
             {(role === "admin" || role === "secretary") && (
-              <a href="#" className="block px-4 py-2 hover:bg-gray-100">
+              <a
+                href="/admin/dizimos"
+                className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
+              >
                 Dízimos
               </a>
             )}
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">
+            <a
+              href="#"
+              className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
+            >
               Eventos
             </a>
           </nav>
