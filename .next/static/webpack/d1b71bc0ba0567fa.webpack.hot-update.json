@@ -1,1 +1,0 @@
-{"c":["webpack"],"r":["pages/admin"],"m":["./components/AdminLayout.tsx","./components/ProtectedLayout.tsx","./node_modules/next/dist/build/webpack/loaders/next-client-pages-loader.js?absolutePagePath=H%3A%5Csistema_igreja%5Csistema_igreja%5Cpages%5Cadmin%5Cindex.tsx&page=%2Fadmin!","./pages/admin/index.tsx","./utils/auth.ts"]}

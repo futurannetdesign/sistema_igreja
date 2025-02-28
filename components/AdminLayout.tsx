@@ -49,7 +49,10 @@ export default function AdminLayout({
             </a>
             {role === "admin" && (
               <>
-                <a href="#" className="block px-4 py-2 hover:bg-gray-100">
+                <a
+                  href="/admin/membros"
+                  className="block px-4 py-2 hover:bg-gray-100"
+                >
                   Membros
                 </a>
                 <a href="#" className="block px-4 py-2 hover:bg-gray-100">
