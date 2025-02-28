@@ -87,10 +87,13 @@ function DizimosPage() {
         throw new Error("A data é obrigatória");
       }
 
+      // Ajuste para garantir que a data seja salva corretamente
+      const dataAjustada = new Date(currentDizimo.data + "T12:00:00");
+
       const dizimoData = {
         membro_id: currentDizimo.membro_id,
         valor: currentDizimo.valor,
-        data: currentDizimo.data,
+        data: dataAjustada.toISOString().split("T")[0], // Garante formato YYYY-MM-DD
         tipo: currentDizimo.tipo || "dizimo",
         observacao: currentDizimo.observacao || null,
         created_by: (await supabase.auth.getUser()).data.user?.id,
@@ -137,6 +140,11 @@ function DizimosPage() {
     }
   };
 
+  const formatarData = (dataString: string) => {
+    const data = new Date(dataString + "T12:00:00");
+    return format(data, "dd/MM/yyyy", { locale: ptBR });
+  };
+
   return (
     <AdminLayout title="Gestão de Dízimos" role="admin">
       <div className="mb-4 flex justify-between items-center">
@@ -178,9 +186,7 @@ function DizimosPage() {
           <tbody>
             {dizimos.map((dizimo) => (
               <tr key={dizimo.id} className="border-t border-gray-200">
-                <td className="px-6 py-4">
-                  {format(new Date(dizimo.data), "dd/MM/yyyy")}
-                </td>
+                <td className="px-6 py-4">{formatarData(dizimo.data)}</td>
                 <td className="px-6 py-4">{dizimo.membro_nome}</td>
                 <td className="px-6 py-4 capitalize">{dizimo.tipo}</td>
                 <td className="px-6 py-4">
