@@ -15,6 +15,19 @@ export default function AdminLayout({
 }: AdminLayoutProps) {
   const router = useRouter();
 
+  const getDashboardPath = () => {
+    switch (role) {
+      case "pastor":
+        return "/admin/dashboard/pastor";
+      case "secretary":
+        return "/admin/dashboard/secretary";
+      case "admin":
+        return "/admin/dashboard/admin";
+      default:
+        return "/admin/dashboard";
+    }
+  };
+
   const handleLogout = async () => {
     await signOut();
     router.push("/login");
@@ -45,9 +58,8 @@ export default function AdminLayout({
       <div className="flex">
         <aside className="w-64 bg-white shadow-lg h-screen">
           <nav className="mt-5 space-y-1 px-2">
-            {/* Link do Dashboard atualiza a página atual */}
             <Link
-              href={router.pathname}
+              href={getDashboardPath()}
               className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
             >
               Dashboard
