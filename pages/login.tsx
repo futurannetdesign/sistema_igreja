@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-export default function LoginPage() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -16,40 +16,43 @@ export default function LoginPage() {
       setLoading(true);
       setError(null);
 
-      const { data, error: signInError } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      if (signInError) throw signInError;
+      if (error) throw error;
 
-      // Buscar o papel do usuário
-      const { data: roleData, error: roleError } = await supabase
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não encontrado");
+
+      const { data: userRole } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", data.user?.id)
+        .eq("user_id", user.id)
         .single();
 
-      if (roleError) throw roleError;
+      if (!userRole) throw new Error("Papel do usuário não encontrado");
 
-      // Redirecionar baseado no papel
-      switch (roleData?.role) {
+      // Redirecionar para o dashboard específico baseado no papel
+      switch (userRole.role) {
         case "admin":
-          router.push("/admin");
-          break;
-        case "pastor":
-          router.push("/pastor");
+          router.push("/admin/dashboard/admin");
           break;
         case "secretary":
-          router.push("/secretary");
+          router.push("/admin/dashboard/secretary");
+          break;
+        case "pastor":
+          router.push("/admin/dashboard/pastor");
           break;
         default:
-          router.push("/");
+          router.push("/login");
       }
-    } catch (err: any) {
-      setError(err.message || "Erro ao fazer login");
-      console.error("Erro de login:", err);
+    } catch (error: any) {
+      setError(error.message || "Erro ao fazer login");
+      console.error("Erro no login:", error);
     } finally {
       setLoading(false);
     }

@@ -2,4 +2,133 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Seus estilos customizados podem vir aqui abaixo */
+@layer base {
+  /* Base styles */
+  :root {
+    --font-smoothing: antialiased;
+  }
+
+  html {
+    -webkit-font-smoothing: var(--font-smoothing);
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #f9fafb;
+  }
+}
+
+@layer utilities {
+  /* Utility classes for responsive behavior */
+  .mobile-only {
+    display: block;
+  }
+  @media (min-width: 768px) {
+    .mobile-only {
+      display: none;
+    }
+  }
+
+  .desktop-only {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .desktop-only {
+      display: block;
+    }
+  }
+}
+
+@layer components {
+  /* Grid Component */
+  .grid-responsive {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .grid-responsive {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 768px) {
+    .grid-responsive {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .grid-responsive {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  /* Card Component */
+  .card-responsive {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    padding: 1rem;
+  }
+  @media (min-width: 640px) {
+    .card-responsive {
+      padding: 1.5rem;
+    }
+  }
+
+  /* Table Component */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+  }
+  .table-responsive table {
+    min-width: 100%;
+    border-collapse: collapse;
+  }
+
+  /* Form Components */
+  .form-responsive {
+    width: 100%;
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .input-base {
+    width: 100%;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+  .input-base:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  }
+
+  .button-base {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+}
+
+/* Custom Media Queries */
+@media (max-width: 640px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .hide-on-desktop {
+    display: none !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

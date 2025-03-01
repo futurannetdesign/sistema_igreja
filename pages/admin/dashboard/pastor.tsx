@@ -1,24 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import { ProtectedLayout } from "../../../components/ProtectedLayout";
 import { supabase } from "../../../lib/supabase";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FaPlus, FaEdit, FaTrash, FaCalendar } from "react-icons/fa";
+import { SystemError } from "../../../types/error";
+import { EventoPastoral, EventType, EventStatus } from "../../../types/events";
 
-interface EventoPastoral {
-  id: string;
-  tipo: "culto" | "visita" | "conversao" | "agenda";
-  titulo: string;
-  descricao?: string;
-  data_evento: string;
-  status: "pendente" | "realizado" | "cancelado";
-  pessoa_envolvida?: string;
-  local?: string;
-  observacoes?: string;
+interface DashboardStats {
+  cultosMes: number;
+  visitasMes: number;
+  conversoesMes: number;
+  agendasMes: number;
 }
 
-function PastorDashboard() {
+function PastorDashboard(): JSX.Element {
   const [eventos, setEventos] = useState<EventoPastoral[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [currentEvento, setCurrentEvento] = useState<Partial<EventoPastoral>>(
@@ -38,9 +35,37 @@ function PastorDashboard() {
   });
 
   useEffect(() => {
-    fetchEventos();
-    calculateMonthlyStats();
+    void fetchEventos();
   }, []);
+
+  const calculateMonthlyStats = useCallback(() => {
+    const hoje = new Date();
+    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+
+    const eventosMes = eventos.filter((evento) => {
+      const dataEvento = new Date(evento.data_evento);
+      return dataEvento >= primeiroDiaMes && dataEvento <= ultimoDiaMes;
+    });
+
+    // Atualizar contagem para considerar apenas eventos realizados
+    setDashboardStats({
+      cultosMes: eventosMes.filter(
+        (e) => e.tipo === "culto" && e.status === "realizado"
+      ).length,
+      visitasMes: eventosMes.filter(
+        (e) => e.tipo === "visita" && e.status === "realizado"
+      ).length,
+      conversoesMes: eventosMes.filter(
+        (e) => e.tipo === "conversao" && e.status === "realizado"
+      ).length,
+      agendasMes: eventosMes.filter((e) => e.tipo === "agenda").length,
+    });
+  }, [eventos]);
+
+  useEffect(() => {
+    calculateMonthlyStats();
+  }, [calculateMonthlyStats]);
 
   const fetchEventos = async () => {
     const { data, error } = await supabase
@@ -54,25 +79,6 @@ function PastorDashboard() {
     }
 
     setEventos(data || []);
-  };
-
-  // Adicionar função para calcular estatísticas do mês
-  const calculateMonthlyStats = () => {
-    const hoje = new Date();
-    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
-
-    const eventosMes = eventos.filter((evento) => {
-      const dataEvento = new Date(evento.data_evento);
-      return dataEvento >= primeiroDiaMes && dataEvento <= ultimoDiaMes;
-    });
-
-    setDashboardStats({
-      cultosMes: eventosMes.filter((e) => e.tipo === "culto").length,
-      visitasMes: eventosMes.filter((e) => e.tipo === "visita").length,
-      conversoesMes: eventosMes.filter((e) => e.tipo === "conversao").length,
-      agendasMes: eventosMes.filter((e) => e.tipo === "agenda").length,
-    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -132,9 +138,10 @@ function PastorDashboard() {
       setShowModal(false);
       setCurrentEvento({});
       await fetchEventos();
-    } catch (error: any) {
-      console.error("Erro detalhado:", error);
-      alert(error.message || "Erro ao salvar evento");
+    } catch (error: unknown) {
+      const err = error as SystemError;
+      console.error("Erro detalhado:", err);
+      alert(err.message || "Erro ao salvar evento");
     }
   };
 
@@ -153,6 +160,14 @@ function PastorDashboard() {
 
       await fetchEventos();
     }
+  };
+
+  const handleTipoChange = (tipo: EventType) => {
+    setFiltroTipo(tipo === "todos" ? "todos" : tipo);
+  };
+
+  const handleStatusChange = (status: EventStatus) => {
+    setCurrentEvento((prev) => ({ ...prev, status }));
   };
 
   const eventosFiltrados = eventos.filter((evento) =>
@@ -262,7 +277,7 @@ function PastorDashboard() {
         <div>
           <select
             value={filtroTipo}
-            onChange={(e) => setFiltroTipo(e.target.value as any)}
+            onChange={(e) => handleTipoChange(e.target.value as EventType)}
             className="rounded-md border-gray-300"
           >
             <option value="todos">Todos os Eventos</option>
@@ -404,10 +419,7 @@ function PastorDashboard() {
                   <select
                     value={currentEvento.status || "pendente"}
                     onChange={(e) =>
-                      setCurrentEvento({
-                        ...currentEvento,
-                        status: e.target.value as EventoPastoral["status"],
-                      })
+                      handleStatusChange(e.target.value as EventStatus)
                     }
                     className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     required

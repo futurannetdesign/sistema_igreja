@@ -1,47 +1,56 @@
 import { useEffect } from "react";
+import type { ComponentType } from "react";
 import { supabase } from "../lib/supabase";
 import { useRouter } from "next/router";
+import type { RoleType } from "../types/auth";
 
 interface AuthProps {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const withAuth = (
-  WrappedComponent: React.ComponentType<AuthProps>,
-  allowedRoles: string[]
-) => {
-  return function AuthComponent(props: AuthProps) {
+  WrappedComponent: ComponentType<AuthProps>,
+  allowedRoles: RoleType[]
+): ComponentType<AuthProps> => {
+  const AuthComponent = (props: AuthProps): JSX.Element => {
     const router = useRouter();
 
     useEffect(() => {
-      const checkAuth = async () => {
+      const checkAuth = async (): Promise<void> => {
         try {
           const {
             data: { user },
           } = await supabase.auth.getUser();
+
           if (!user) {
-            router.push("/login");
+            void router.push("/login");
             return;
           }
 
-          const { data: roles } = await supabase
+          const { data: userRole } = await supabase
             .from("user_roles")
             .select("role")
             .eq("user_id", user.id)
             .single();
 
-          if (!roles || !allowedRoles.includes(roles.role)) {
-            router.push("/login");
+          const role = userRole?.role as RoleType;
+          if (!role || !allowedRoles.includes(role)) {
+            void router.push("/login");
           }
         } catch (error) {
           console.error("Erro de autenticação:", error);
-          router.push("/login");
+          void router.push("/login");
         }
       };
 
-      checkAuth();
+      void checkAuth();
     }, [router]);
 
     return <WrappedComponent {...props} />;
   };
+
+  AuthComponent.displayName = `WithAuth(${
+    WrappedComponent.displayName || WrappedComponent.name || "Component"
+  })`;
+  return AuthComponent;
 };

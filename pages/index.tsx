@@ -1,21 +1,49 @@
+import { useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
+import { supabase } from "../lib/supabase";
+import type { RoleType } from "../types/auth";
 
-export default function Home() {
+export default function Home(): JSX.Element {
   const router = useRouter();
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <h1 className="text-3xl font-bold text-center">Sistema Igreja</h1>
-        <div className="space-y-4">
-          <button
-            onClick={() => router.push("/login")}
-            className="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600"
-          >
-            Entrar
-          </button>
-        </div>
-      </div>
-    </div>
+  const handleRedirect = useCallback(
+    async (role: RoleType): Promise<void> => {
+      await router.push(`/admin/dashboard/${role}`);
+    },
+    [router]
   );
+
+  useEffect(() => {
+    const checkAuth = async (): Promise<void> => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          void router.push("/login");
+          return;
+        }
+
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .single();
+
+        if (roleData?.role) {
+          await handleRedirect(roleData.role as RoleType);
+        } else {
+          void router.push("/login");
+        }
+      } catch (error) {
+        console.error("Erro:", error);
+        void router.push("/login");
+      }
+    };
+
+    void checkAuth();
+  }, [handleRedirect, router]);
+
+  return <div>Redirecionando...</div>;
 }

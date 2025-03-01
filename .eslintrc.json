@@ -1,0 +1,29 @@
+{
+  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": [
+      "error",
+      {
+        "ignoreRestArgs": true
+      }
+    ],
+    "@typescript-eslint/explicit-function-return-type": [
+      "error",
+      {
+        "allowExpressions": true,
+        "allowTypedFunctionExpressions": true,
+        "allowHigherOrderFunctions": true
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "react-hooks/exhaustive-deps": "warn"
+  },
+  "ignorePatterns": ["node_modules/", ".next/", "public/"]
+}

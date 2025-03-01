@@ -1,2 +1,5 @@
-# sistema_igreja
- Sistema de membros para igreja
+# Sistema Igreja
+
+## Configuração de Ambiente
+
+1. Copie o arquivo .env.example para .env.local:
