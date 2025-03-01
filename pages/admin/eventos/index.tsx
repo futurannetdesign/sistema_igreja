@@ -5,6 +5,7 @@ import { supabase } from "../../../lib/supabase";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FaPlus, FaEdit, FaTrash, FaCalendar } from "react-icons/fa";
+import { useUserRole } from "../../../hooks/useUserRole";
 
 interface Evento {
   id: string;
@@ -19,6 +20,7 @@ interface Evento {
 }
 
 function EventosPage() {
+  const role = useUserRole();
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [currentEvento, setCurrentEvento] = useState<Partial<Evento>>({});
@@ -126,8 +128,10 @@ function EventosPage() {
     }
   };
 
+  if (!role) return null; // Aguarda o role ser carregado
+
   return (
-    <AdminLayout title="Gestão de Eventos" role="admin">
+    <AdminLayout title="Gestão de Eventos" role={role}>
       <div className="mb-4 flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Eventos</h2>
         <button

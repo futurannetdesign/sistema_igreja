@@ -5,6 +5,7 @@ import { supabase } from "../../../lib/supabase";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { useUserRole } from "../../../hooks/useUserRole";
 
 interface Dizimo {
   id: string;
@@ -22,6 +23,7 @@ interface Membro {
 }
 
 function DizimosPage() {
+  const role = useUserRole();
   const [dizimos, setDizimos] = useState<Dizimo[]>([]);
   const [membros, setMembros] = useState<Membro[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -145,8 +147,10 @@ function DizimosPage() {
     return format(data, "dd/MM/yyyy", { locale: ptBR });
   };
 
+  if (!role) return null; // Aguarda o role ser carregado
+
   return (
-    <AdminLayout title="Gestão de Dízimos" role="admin">
+    <AdminLayout title="Gestão de Dízimos" role={role}>
       <div className="mb-4 flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Dízimos e Ofertas</h2>
         <button
@@ -161,7 +165,6 @@ function DizimosPage() {
         </button>
       </div>
 
-      {/* Tabela de dízimos */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full">
           <thead className="bg-gray-50">
@@ -221,7 +224,6 @@ function DizimosPage() {
         </table>
       </div>
 
-      {/* Modal de criação/edição */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg w-full max-w-md p-6">
@@ -333,7 +335,7 @@ function DizimosPage() {
                 />
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

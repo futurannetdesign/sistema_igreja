@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { signOut } from "../utils/auth";
 
 interface AdminLayoutProps {
@@ -44,42 +45,85 @@ export default function AdminLayout({
       <div className="flex">
         <aside className="w-64 bg-white shadow-lg h-screen">
           <nav className="mt-5 space-y-1 px-2">
-            <a
-              href="#"
+            {/* Link do Dashboard atualiza a página atual */}
+            <Link
+              href={router.pathname}
               className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
             >
               Dashboard
-            </a>
+            </Link>
+
+            {/* Links específicos para admin */}
             {role === "admin" && (
               <>
-                <a
+                <Link
                   href="/admin/membros"
                   className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
                 >
                   Membros
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/admin/usuarios"
                   className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
                 >
                   Usuários
-                </a>
+                </Link>
+                <Link
+                  href="/admin/dizimos"
+                  className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
+                >
+                  Dízimos
+                </Link>
+                <Link
+                  href="/admin/eventos"
+                  className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
+                >
+                  Eventos
+                </Link>
               </>
             )}
-            {(role === "admin" || role === "secretary") && (
-              <a
-                href="/admin/dizimos"
-                className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
-              >
-                Dízimos
-              </a>
+
+            {/* Links para secretária */}
+            {role === "secretary" && (
+              <>
+                <Link
+                  href="/admin/membros"
+                  className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
+                >
+                  Membros
+                </Link>
+                <Link
+                  href="/admin/dizimos"
+                  className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
+                >
+                  Dízimos
+                </Link>
+                <Link
+                  href="/admin/eventos"
+                  className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
+                >
+                  Eventos
+                </Link>
+              </>
             )}
-            <a
-              href="/admin/eventos"
-              className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
-            >
-              Eventos
-            </a>
+
+            {/* Links para pastor */}
+            {role === "pastor" && (
+              <>
+                <Link
+                  href="/admin/membros"
+                  className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
+                >
+                  Membros
+                </Link>
+                <Link
+                  href="/admin/eventos"
+                  className="block px-4 py-2 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all transform hover:scale-105"
+                >
+                  Eventos
+                </Link>
+              </>
+            )}
           </nav>
         </aside>
 

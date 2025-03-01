@@ -2,8 +2,9 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/admin/dizimos": "pages/admin/dizimos.js",
+  "/admin/eventos": "pages/admin/eventos.js",
   "/login": "pages/login.js",
-  "/api/health": "pages/api/health.js",
-  "/secretary": "pages/secretary.js"
+  "/admin/membros": "pages/admin/membros.js",
+  "/pastor": "pages/pastor.js",
+  "/api/health": "pages/api/health.js"
 }

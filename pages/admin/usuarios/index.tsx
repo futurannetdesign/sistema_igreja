@@ -288,4 +288,6 @@ function UsuariosPage() {
   );
 }
 
-export default ProtectedLayout(UsuariosPage, { allowedRoles: ["admin"] });
+export default ProtectedLayout(UsuariosPage, {
+  allowedRoles: ["admin"],
+});

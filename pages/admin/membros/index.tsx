@@ -5,9 +5,10 @@ import { supabase } from "../../../lib/supabase";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FaWhatsapp, FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { useUserRole } from "../../../hooks/useUserRole";
 
 interface Membro {
-  id: number;
+  id: string; // Mudado de number para string (UUID)
   nome: string;
   email: string;
   telefone: string;
@@ -18,6 +19,7 @@ interface Membro {
 }
 
 function MembrosPage() {
+  const role = useUserRole();
   const [membros, setMembros] = useState<Membro[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [currentMembro, setCurrentMembro] = useState<Partial<Membro>>({});
@@ -40,62 +42,64 @@ function MembrosPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Verificar duplicata antes de salvar
-      const { data: existingMembro } = await supabase
-        .from("membros")
-        .select("id")
-        .eq("nome", currentMembro.nome)
-        .eq("data_nascimento", currentMembro.data_nascimento)
-        .maybeSingle();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
 
-      if (
-        existingMembro &&
-        (!isEditing || existingMembro.id !== currentMembro.id)
-      ) {
-        throw new Error(
-          "Já existe um membro cadastrado com este nome e data de nascimento"
-        );
-      }
-
+      // Remover campos undefined ou vazios
       const membroData = {
-        ...currentMembro,
+        nome: currentMembro.nome?.trim(),
+        email: currentMembro.email?.trim() || null,
+        telefone: currentMembro.telefone?.trim(),
         data_nascimento: currentMembro.data_nascimento
           ? new Date(currentMembro.data_nascimento).toISOString().split("T")[0]
           : null,
+        endereco: currentMembro.endereco?.trim() || null,
         data_batismo: currentMembro.data_batismo
           ? new Date(currentMembro.data_batismo).toISOString().split("T")[0]
           : null,
+        created_by: user.id,
         updated_at: new Date().toISOString(),
       };
 
-      if (isEditing) {
-        const { error } = await supabase
+      let error;
+      if (isEditing && currentMembro.id) {
+        const { error: updateError } = await supabase
           .from("membros")
           .update(membroData)
           .eq("id", currentMembro.id);
-
-        if (error) throw error;
+        error = updateError;
       } else {
-        const { error } = await supabase.from("membros").insert([membroData]);
-
-        if (error) throw error;
+        const { error: insertError } = await supabase
+          .from("membros")
+          .insert([membroData]);
+        error = insertError;
       }
 
+      if (error) throw error;
+
       setShowModal(false);
-      fetchMembros();
+      setCurrentMembro({});
+      await fetchMembros();
     } catch (error: any) {
       console.error("Erro detalhado:", error);
-      alert(
-        error.message || "Erro ao salvar membro. Verifique se não há duplicata."
-      );
+      alert(error.message || "Erro ao salvar membro");
     }
   };
 
-  const handleDelete = async (id: number) => {
+  // Corrigido o tipo do parâmetro id para string
+  const handleDelete = async (id: string) => {
     if (window.confirm("Tem certeza que deseja excluir este membro?")) {
-      const { error } = await supabase.from("membros").delete().eq("id", id);
+      try {
+        const { error } = await supabase.from("membros").delete().eq("id", id);
 
-      if (!error) fetchMembros();
+        if (error) throw error;
+        await fetchMembros();
+      } catch (error: any) {
+        console.error("Erro ao excluir:", error);
+        alert(error.message || "Erro ao excluir membro");
+      }
     }
   };
 
@@ -106,8 +110,10 @@ function MembrosPage() {
     return format(parseISO(data), "dd/MM/yyyy", { locale: ptBR });
   };
 
+  if (!role) return null; // Aguarda o role ser carregado
+
   return (
-    <AdminLayout title="Gestão de Membros" role="admin">
+    <AdminLayout title="Gestão de Membros" role={role}>
       <div className="mb-4 flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Membros</h2>
         <button
@@ -345,4 +351,6 @@ function MembrosPage() {
   );
 }
 
-export default ProtectedLayout(MembrosPage, { allowedRoles: ["admin"] });
+export default ProtectedLayout(MembrosPage, {
+  allowedRoles: ["admin", "secretary", "pastor"], // Permitir acesso para todos os papéis
+});

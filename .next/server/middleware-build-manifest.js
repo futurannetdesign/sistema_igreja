@@ -19,30 +19,25 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/admin/dizimos": [
+    "/admin/eventos": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/admin/dizimos.js"
+      "static/chunks/pages/admin/eventos.js"
     ],
     "/admin/membros": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/admin/membros.js"
     ],
-    "/admin/usuarios": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/admin/usuarios.js"
-    ],
     "/login": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/login.js"
     ],
-    "/secretary": [
+    "/pastor": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/secretary.js"
+      "static/chunks/pages/pastor.js"
     ]
   },
   "ampFirstPages": []
