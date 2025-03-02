@@ -1,6 +1,6 @@
 // Temporarily disable middleware for static export
 export const config = {
-  matcher: []
+  matcher: [],
 };
 
 /*
