@@ -15,11 +15,11 @@ export default function AdminLayout({
   children,
   title,
   role,
-}: AdminLayoutProps) {
+}: AdminLayoutProps): JSX.Element {
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const getDashboardPath = () => {
+  const getDashboardPath = (): string => {
     switch (role) {
       case "admin":
         return "/admin/dashboard/admin";
@@ -32,19 +32,20 @@ export default function AdminLayout({
     }
   };
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     await signOut();
-    router.push("/login");
+    void router.push("/login");
   };
 
   // Adicionar função de tratamento de erro
   const handleImageError = (
-    e: React.SyntheticEvent<HTMLImageElement, Event>,
+    error: React.SyntheticEvent<HTMLImageElement, Event>,
     location: string
-  ) => {
-    console.error(`Erro ao carregar logo (${location}):`, e);
-    console.log("Caminho da imagem:", "/images/logo.svg");
-    e.currentTarget.style.display = "none";
+  ): void => {
+    const target = error.currentTarget;
+    console.error(`Erro ao carregar logo (${location}):`, error.type);
+    target.style.display = "none";
+    target.setAttribute("alt", "Logo não carregada");
   };
 
   return (

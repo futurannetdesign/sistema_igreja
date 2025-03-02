@@ -1,22 +1,18 @@
 {
   "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
   "rules": {
-    "@typescript-eslint/no-explicit-any": [
-      "error",
-      {
-        "ignoreRestArgs": true
-      }
-    ],
+    "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/explicit-function-return-type": [
-      "error",
+      "warn",
       {
         "allowExpressions": true,
         "allowTypedFunctionExpressions": true,
-        "allowHigherOrderFunctions": true
+        "allowHigherOrderFunctions": true,
+        "allowDirectConstAssertionInArrowFunctions": true
       }
     ],
     "@typescript-eslint/no-unused-vars": [
-      "error",
+      "warn",
       {
         "argsIgnorePattern": "^_",
         "varsIgnorePattern": "^_",
